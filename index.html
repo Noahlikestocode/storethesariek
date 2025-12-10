@@ -1,56 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Store The Sariek - Grocery</title>
+<title>Store The Sariek - Supermarkt</title>
 
 <style>
-/* BASE THEME */
 :root{
  --red:#e03726;
  --green:#1a8b3a;
  --white:#fff;
  --black:#111;
  --radius:10px;
- font-family: Poppins, sans-serif;
+ font-family: Arial, sans-serif;
 }
+
 body{margin:0;background:var(--red);color:white;text-align:center;}
 a{text-decoration:none;color:white;font-weight:bold}
 
-/* LOGO AS BASE64 CSS IMAGE (replace if you want) */
+/* LOGO BASE64 (placeholder red circle — replace later) */
 .logo{
- height:60px;width:60px;
- background-size:cover;
- background-repeat:no-repeat;
- border-radius:50%;
- background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAABXGmYVAAA...TRIMMED_FOR_SPACE...); /* <-- YOUR LOGO BASE64 SHORTENED */
+ height:60px;width:60px;border-radius:50%;
+ background:red;
+ display:flex;align-items:center;justify-content:center;
+ font-weight:900;font-size:20px;color:white;
 }
 
-/* NAV */
+/* NAVIGATION */
 nav{display:flex;justify-content:space-between;align-items:center;
  padding:12px 25px;background:rgba(0,0,0,0.2);}
-#cart-count{background:white;color:black;padding:2px 7px;border-radius:50%;font-weight:800;margin-left:5px;}
+#cart-count{background:white;color:black;padding:2px 7px;border-radius:50%;font-weight:900;margin-left:5px;}
 
 /* HERO */
 .hero{padding:60px 20px;}
-.hero h1{font-size:42px;margin:15px 0}
+.hero h1{font-size:42px;margin-bottom:5px;}
 
-/* PRODUCT GRID */
-.products{background:white;color:black;padding:50px 15px;margin-top:30px;border-radius:40px 40px 0 0;}
+/* PRODUCTS */
+.products{background:white;color:black;padding:40px 15px;margin-top:30px;border-radius:40px 40px 0 0;}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;max-width:1300px;margin:auto;}
 .item{background:#fff;border-radius:var(--radius);box-shadow:0 3px 10px rgba(0,0,0,.1);padding:12px}
 .item img{width:100%;border-radius:var(--radius);height:140px;object-fit:cover;}
 .price{color:var(--green);font-weight:800;margin:8px 0}
 button{background:var(--green);border:none;padding:8px;width:100%;color:white;border-radius:var(--radius);cursor:pointer;font-weight:700}
 
-/* CART POPUP */
+/* CART */
 #cart-box{position:fixed;top:0;right:0;width:350px;height:100%;
  background:white;color:black;transform:translateX(100%);
 transition:.4s;padding:20px;overflow-y:auto;z-index:1000;}
 #cart-box.open{transform:translateX(0);}
 .cart-item{display:flex;justify-content:space-between;margin:10px 0;border-bottom:1px solid #ddd;padding-bottom:6px;}
-.cart-item button{background:red}
+.cart-item button{background:red;padding:4px 10px}
+
+/* CHECKOUT */
+#checkout-screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+ background:white;color:black;padding:25px;overflow:auto;z-index:2000;}
+input{width:90%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #999;}
+#confirm{background:var(--green);padding:12px;border:none;color:white;width:94%;border-radius:10px;font-size:18px;font-weight:bold;margin-top:10px;}
 
 /* FOOTER */
 footer{padding:20px;background:#111;color:white;margin-top:60px}
@@ -59,70 +64,86 @@ footer{padding:20px;background:#111;color:white;margin-top:60px}
 <body>
 
 <nav>
- <div class="logo"></div>
+ <div class="logo">S</div>
  <div>
-  <a href="#products">Products</a> |
-  <a href="#" onclick="toggleCart()">Cart <span id="cart-count">0</span></a>
+  <a href="#products">Producten</a> |
+  <a href="#" onclick="toggleCart()">Winkelwagen <span id="cart-count">0</span></a>
  </div>
 </nav>
 
 <section class="hero">
- <h1>Welcome to Store The Sariek Grocery</h1>
- <p>Fresh food, Low prices — Over 100 grocery essentials.</p>
- <a href="#products" style="background:var(--green);padding:12px 20px;border-radius:var(--radius);color:white;">Start Shopping</a>
+ <h1>Welkom bij Store The Sariek</h1>
+ <p>Goedkoop, vers & 100 productkeuzes!</p>
+ <a href="#products" style="background:var(--green);padding:12px 20px;border-radius:var(--radius);color:white;">Winkelen</a>
 </section>
 
 <section class="products" id="products">
- <h2>Available Products</h2>
-
+ <h2>Producten</h2>
  <div class="grid" id="productList"></div>
 </section>
 
-<!-- CART PANEL -->
+<!-- CART -->
 <div id="cart-box">
- <h2>Your Cart</h2>
+ <h2>Winkelwagen</h2>
  <div id="cart-items"></div>
- <h3 id="total">Total: $0.00</h3>
- <button onclick="checkout()" style="background:var(--green);margin-top:15px;">Checkout</button>
- <button onclick="toggleCart()" style="margin-top:10px;background:gray">Close</button>
+ <h3 id="total">Totaal: €0.00</h3>
+ <button onclick="openCheckout()" style="background:var(--green);margin-top:10px;">Afrekenen</button>
+ <button onclick="toggleCart()" style="margin-top:10px;background:gray">Sluiten</button>
+</div>
+
+<!-- CHECKOUT FORM -->
+<div id="checkout-screen">
+ <h2>Bestelling afronden</h2>
+ <p>Vul uw gegevens in:</p>
+ <input id="name" placeholder="Naam">
+ <input id="address" placeholder="Adres">
+ <input id="email" placeholder="E-mail">
+ <button id="confirm" onclick="finishOrder()">Bestelling Verzenden</button>
+ <br><br>
+ <button onclick="document.getElementById('checkout-screen').style.display='none'">Annuleren</button>
 </div>
 
 <footer>
- © 2025 Store The Sariek Grocery | Proof-of-Concept Shop System
+ © 2025 Store The Sariek Supermarkt
 </footer>
 
 <script>
-/* ---------------- GENERATE 100 PRODUCTS ---------------- */
-const products=[];
-for(let i=1;i<=100;i++){
+/* --- REAL MAIN PRODUCTS --- */
+const products = [
+ {name:"Aardbei Yoghurt", price:"3.50", img:"https://images.unsplash.com/photo-1572552634377-3e88c087e0d4?auto=format&fit=crop&w=400&q=60"},
+ {name:"Melk Mango Yoghurt", price:"3.50", img:"https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=60"},
+ {name:"Raak Ranja", price:"3.50", img:"https://images.unsplash.com/photo-1562619424-0ee3a8c09b62?auto=format&fit=crop&w=400&q=60"},
+];
+
+/* --- Fill to 100 items --- */
+for(let i=4;i<=100;i++){
  products.push({
-  name:"Grocery Item "+i,
-  price:(Math.random()*10+1).toFixed(2),
-  img:`https://picsum.photos/seed/grocery${i}/300/300`
+  name:"Product "+i,
+  price:(Math.random()*7+1).toFixed(2),
+  img:`https://picsum.photos/seed/item${i}/300`
  });
 }
 
-/* ---------------- DISPLAY PRODUCTS ---------------- */
+/* DISPLAY */
 const container=document.getElementById("productList");
 products.forEach((p,i)=>{
  container.innerHTML+=`
   <div class="item">
    <img src="${p.img}">
    <h4>${p.name}</h4>
-   <div class="price">$${p.price}</div>
-   <button onclick="addToCart(${i})">Add to cart</button>
+   <div class="price">€${p.price}</div>
+   <button onclick="addToCart(${i})">Toevoegen</button>
   </div>`;
 });
 
-/* ---------------- CART SYSTEM ---------------- */
-let cart=JSON.parse(localStorage.getItem("cart")||"[]");
+/* CART SYSTEM */
+let cart = JSON.parse(localStorage.getItem("cart")||"[]");
 updateCartCount();
 
 function addToCart(i){
  cart.push(products[i]);
  localStorage.setItem("cart",JSON.stringify(cart));
  updateCartCount();
- alert("Added to cart!");
 }
 
 function updateCartCount(){
@@ -142,11 +163,11 @@ function displayCart(){
   total+=Number(p.price);
   box.innerHTML+=`
   <div class="cart-item">
-   <span>${p.name} - $${p.price}</span>
+   <span>${p.name} - €${p.price}</span>
    <button onclick="removeItem(${i})">X</button>
   </div>`;
  });
- document.getElementById("total").innerText="Total: $"+total.toFixed(2);
+ document.getElementById("total").innerText="Totaal: €"+total.toFixed(2);
 }
 
 function removeItem(i){
@@ -155,7 +176,23 @@ function removeItem(i){
  displayCart();updateCartCount();
 }
 
-function checkout(){ alert("Checkout not implemented yet!"); }
+/* CHECKOUT */
+function openCheckout(){
+ document.getElementById("checkout-screen").style.display="block";
+}
+
+function finishOrder(){
+ let name=document.getElementById("name").value.trim();
+ let address=document.getElementById("address").value.trim();
+ if(!name||!address) return alert("Vul naam en adres in!");
+
+ alert("Bedankt voor je bestelling, "+name+"!\n📦 Levering naar: "+address+"\n(Deze checkout is nep — demo webshop)");
+
+ cart=[];
+ localStorage.setItem("cart","[]");
+ updateCartCount();
+ document.getElementById("checkout-screen").style.display="none";
+}
 </script>
 
 </body>
